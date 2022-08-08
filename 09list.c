@@ -126,6 +126,7 @@ bool insert_list(List* list,size_t index,TYPE val)
 	return true;
 }
 
+//按值删除
 bool del_value_list(List* list,TYPE val)
 {
 	if(val == list->head->next->data)
@@ -146,6 +147,118 @@ bool del_value_list(List* list,TYPE val)
 	}
 	return false;
 }
+
+//按位置删除
+bool del_index_list(List* list,size_t index)
+{
+	if(list->size <= index)	return false;
+	if(0 == index)	return del_head_list(list);
+	if(index == list->size-1)	return del_tail_list(list);
+	Node* prev = list->head->next;
+	for(int i=1; i<index; i++)
+	{
+		prev = prev->next;	
+	}
+	Node* temp = prev->next;
+	prev->next = temp->next;
+	free(temp);
+	list->size--;
+	return true;
+}
+
+//按位置修改
+bool modify_index_list(List* list,size_t index,TYPE val)
+{
+	if(index >= list->size)	return false;
+	Node* n = list->head->next;
+	for(int i=0; i<index; i++)
+	{
+		n=n->next;	
+	}
+	n->data = val;
+	return true;
+}
+//按值修改
+size_t modify_value_list(List* list,TYPE old,TYPE val)
+{
+	Node* node = list->head->next;
+	size_t count=0;
+	while(node != NULL)
+	{
+		if(node->data == old)
+		{
+			node->data = val;	
+			count++;
+		}
+		node = node->next;
+	}
+	return count;
+}
+//查询
+int query_list(List* list,TYPE val)
+{
+	int cnt=0;
+	Node* node = list->head->next;
+	while(node != NULL)
+	{
+		if(node->data == val)
+		{
+			return cnt;	
+		}
+		cnt++;
+		node = node->next;
+	}
+	return -1;
+}
+//访问
+bool access_list(List* list,size_t index,TYPE* val)
+{
+	if(index >= list->size)	return false;
+	Node* node = list->head->next;
+	for(int i=0; i<index; i++)
+	{
+		node = node->next;
+	}
+	*val = node->data;
+	return true;
+}
+//排序
+void sort_list(List* list)
+{
+	for(Node* i=list->head->next; i->next!=NULL; i=i->next)
+	{
+		for(Node* j=i->next; j!=NULL; j=j->next)
+		{
+			if(i->data >j->data)
+			{
+				TYPE data = i->data;
+				i->data = j->data;
+				j->data = data;
+			}
+		}
+	}
+}
+//清空
+void clear_list(List* list)
+{
+	//while(del_head_list(list));	
+	while(list->head->next!=NULL)
+	{
+		Node* temp = list->head->next;	
+		list->head->next = temp->next;
+		free(temp);
+	}
+	list->tail = NULL;
+	list->size = 0;
+}
+//销毁
+void destory_list(List* list)
+{
+	while(del_head_list(list));
+	free(list->head);
+	free(list);
+}
+
 //遍历
 void show_list(List* list)
 {
@@ -164,6 +277,15 @@ int main(int argc,const char* argv[])
 	}
 	show_list(list);
 	insert_list(list,1,45);
+	insert_list(list,1,45);
+	insert_list(list,1,45);
+	//show_list(list);
+	del_index_list(list,1);
+	del_index_list(list,6);
+	show_list(list);
+	modify_index_list(list,0,44);
+	show_list(list);
+	modify_value_list(list,45,0);
 	show_list(list);
 	return 0;
 }
